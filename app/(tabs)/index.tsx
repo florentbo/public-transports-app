@@ -1,75 +1,209 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Alert,
+} from "react-native";
+import { QueryProvider } from "@/presentation/providers/QueryProvider";
+import { useNearbyStops } from "@/presentation/hooks/useNearbyStops";
+import { StopCard } from "@/presentation/components/StopCard";
+import { StopEntity } from "@/domain/entities/Stop";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+function HomeContent() {
+  // Mock coordinates for Paris (you can replace with real location)
+  const [searchLocation] = useState({ lat: 48.8566, lon: 2.3522 });
+  const [radius, setRadius] = useState(1);
+
+  const {
+    data: nearbyStopsData,
+    isLoading,
+    error,
+  } = useNearbyStops({
+    lat: searchLocation.lat,
+    lon: searchLocation.lon,
+    radius: radius,
+  });
+
+  const handleStopPress = (stop: StopEntity) => {
+    Alert.alert(
+      `${stop.name}`,
+      `Stop ID: ${stop.id}\nRoutes: ${stop.routes.join(", ")}\nDistance: ${stop.distanceFrom(searchLocation.lat, searchLocation.lon).toFixed(2)}km`,
+      [{ text: "OK" }],
+    );
+  };
+
+  const handleRadiusChange = (text: string) => {
+    const value = parseFloat(text);
+    if (!isNaN(value) && value > 0) {
+      setRadius(value);
+    }
+  };
+
+  const renderStopItem = ({ item }: { item: StopEntity }) => (
+    <StopCard
+      stop={item}
+      onPress={handleStopPress}
+      distance={item.distanceFrom(searchLocation.lat, searchLocation.lon)}
+    />
+  );
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error loading nearby stops</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>🚇 Public Transports</Text>
+        <Text style={styles.subtitle}>Find nearby stops and routes</Text>
+
+        <View style={styles.searchContainer}>
+          <Text style={styles.label}>Search Radius (km):</Text>
+          <TextInput
+            style={styles.radiusInput}
+            value={radius.toString()}
+            onChangeText={handleRadiusChange}
+            keyboardType="numeric"
+            placeholder="1.0"
+          />
+        </View>
+      </View>
+
+      <View style={styles.locationInfo}>
+        <Text style={styles.locationText}>
+          📍 Location: {searchLocation.lat.toFixed(4)},{" "}
+          {searchLocation.lon.toFixed(4)}
+        </Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>
+        Nearby Stops {nearbyStopsData && `(${nearbyStopsData.stops.length})`}
+      </Text>
+
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading nearby stops...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={nearbyStopsData?.stops || []}
+          renderItem={renderStopItem}
+          keyExtractor={(item) => item.id}
+          style={styles.list}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No stops found in this area</Text>
+            </View>
+          }
+        />
+      )}
+    </View>
+  );
+}
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <QueryProvider>
+      <HomeContent />
+    </QueryProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    backgroundColor: "white",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 20,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  label: {
+    fontSize: 14,
+    color: "#666",
+  },
+  radiusInput: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 14,
+    backgroundColor: "white",
+    width: 80,
+  },
+  locationInfo: {
+    backgroundColor: "#e3f2fd",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  locationText: {
+    fontSize: 12,
+    color: "#1565c0",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  list: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#666",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#d32f2f",
+  },
+  emptyContainer: {
+    padding: 40,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
   },
 });
