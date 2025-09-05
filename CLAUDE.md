@@ -114,25 +114,62 @@ app/
 
 ### Main Components
 
-- **StopCard** (`src/presentation/components/StopCard.tsx`) - Displays stop information with distance and routes
-- **QueryProvider** (`src/presentation/providers/QueryProvider.tsx`) - React Query provider for data management
-- **Custom Hooks** - `useNearbyStops`, `useUpcomingArrivals` for data fetching
+- **StopCard** (`src/presentation/components/StopCard.tsx`) - Displays stop information with distance and routes, includes touch handlers and route tags
+- **QueryProvider** (`src/presentation/providers/QueryProvider.tsx`) - React Query provider for data management with 5-minute stale time
+- **Custom Hooks**:
+  - `useNearbyStops` - React Query hook with caching, calls TransportService.findNearbyStops.execute()
+  - `useUpcomingArrivals` - For future stop detail screens (implemented but unused)
 
 ### Current Features
 
-- View nearby public transport stops within configurable radius (0.5-5km)
-- Adjust search radius through UI input
-- Display stop details (name, code, routes, distance)
-- Distance calculation using Haversine formula
-- Mock geolocation using Paris coordinates (48.8566, 2.3522)
+- **Nearby Stops Display** - Shows stops within configurable radius (0.5-5km) using FlatList
+- **Search Radius Control** - TextInput with numeric keyboard for radius adjustment
+- **Stop Information** - Name, code, routes, distance with formatted display (meters/kilometers)
+- **Interactive Stop Cards** - TouchableOpacity with Alert dialog showing detailed stop info
+- **Distance Calculation** - Haversine formula implementation in StopEntity.distanceFrom()
+- **Mock Geolocation** - Fixed Paris coordinates (48.8566, 2.3522) in useState
+- **Loading States** - Loading spinner, error states, empty list handling
 
 ### Mock Data
 
 - **Location**: `src/infrastructure/repositories/Mock*.ts`
-- **Stops**: 8 Paris transport stops (metro, bus, tram)
-- **Routes**: 11 lines (Metro 1,4,6,7,9,14 + Bus 21,27,38 + Tram T1,T2)
+- **Stops**: 8 stops - Central Station, City Hall, University, Shopping Mall, Airport Terminal, Beach Resort, Mountain Lodge, Industrial District
+- **Routes**: A-F lines with different transport types (Metro, Bus, Tram patterns)
+- **Stop Coordinates**: Paris area (48.84-48.87 lat, 2.33-2.37 lon)
 - **Schedules**: Generated trips every 15 minutes from 6 AM to midnight
-- **Coverage Area**: Central Paris (République, Châtelet, Bastille, etc.)
+- **Stop Codes**: Format like CS01, CH01, UN01, etc.
+
+### Implementation Details
+
+#### Dependency Injection (TransportService)
+
+```typescript
+// Central service in src/application/services/TransportService.ts
+static findNearbyStops = new FindNearbyStops(MockStopRepository)
+static getUpcomingArrivals = new GetUpcomingArrivals(MockTripRepository, MockRouteRepository)
+static searchRoutes = new SearchRoutes(MockRouteRepository)
+```
+
+#### Domain Entities
+
+- **StopEntity** - Has distanceFrom() method using Haversine formula
+- **RouteEntity** - Transport line information with type (metro/bus/tram)
+- **TripEntity** - Individual trip with departure time and stop sequence
+
+#### Use Cases Implemented
+
+- **FindNearbyStops** - Filters stops by radius and returns with distances
+- **GetUpcomingArrivals** - Gets next arrivals for a stop (hook exists, screen pending)
+- **SearchRoutes** - Search routes by name/type (implemented, UI pending)
+
+#### React Query Integration
+
+```typescript
+// useNearbyStops pattern
+queryKey: ["nearbyStops", lat, lon, radius]
+staleTime: 5 minutes, gcTime: 10 minutes
+enabled: lat !== 0 && lon !== 0
+```
 
 ## TypeScript Configuration
 
@@ -161,9 +198,10 @@ TypeScript strict mode is enabled. All code must pass type checking.
 
 ### Mock Configuration
 
-- Expo modules mocked in `jest-setup.js`
-- Path aliases configured in `jest.config.js`
-- Use `jest.mock()` for external dependencies
+- **Jest Setup** (`jest-setup.js`): Mocks expo-constants, expo-router, global.**DEV**
+- **Path Aliases**: Configured in both `jest.config.js` and `tsconfig.json`
+- **Test Environment**: Node environment with React Native Testing Library
+- **Module Name Mapping**: All @/ paths mapped to correct src/ directories
 
 ## Adding New Features
 
@@ -218,10 +256,15 @@ The app currently uses mock data for Paris public transport:
 
 ### ESLint Configuration
 
-- **eslint-plugin-react-native** catches React Native specific issues
-- Detects unsupported StyleSheet properties (like `gap`)
-- Validates ThemedText component usage
-- Prevents runtime crashes from invalid CSS properties
+- **eslint-plugin-react-native** with rules:
+  - `no-unused-styles: error` - Prevents unused StyleSheet entries
+  - `no-inline-styles: warn` - Encourages StyleSheet usage
+  - `no-raw-text: error` - Requires ThemedText wrapper (skip: ["ThemedText"])
+  - `split-platform-components: error` - Enforces platform-specific files
+- **Custom Style Rules** - Blocks unsupported CSS properties:
+  - `gap` → Use margin/padding instead
+  - `backdropFilter` → Not supported in RN
+  - `boxShadow` → Use shadowColor, shadowOffset, shadowOpacity, shadowRadius
 
 ### Quick Validation
 
