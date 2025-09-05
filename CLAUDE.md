@@ -105,6 +105,35 @@ app/
 └── +not-found.tsx   # 404 handler
 ```
 
+## Quick Project Status
+
+### Implemented Screens
+
+- **Home Screen** (`app/(tabs)/index.tsx`) - Shows nearby transport stops with adjustable search radius
+- **Explore Screen** (`app/(tabs)/explore.tsx`) - Contains default Expo template content (needs replacement with Routes functionality)
+
+### Main Components
+
+- **StopCard** (`src/presentation/components/StopCard.tsx`) - Displays stop information with distance and routes
+- **QueryProvider** (`src/presentation/providers/QueryProvider.tsx`) - React Query provider for data management
+- **Custom Hooks** - `useNearbyStops`, `useUpcomingArrivals` for data fetching
+
+### Current Features
+
+- View nearby public transport stops within configurable radius (0.5-5km)
+- Adjust search radius through UI input
+- Display stop details (name, code, routes, distance)
+- Distance calculation using Haversine formula
+- Mock geolocation using Paris coordinates (48.8566, 2.3522)
+
+### Mock Data
+
+- **Location**: `src/infrastructure/repositories/Mock*.ts`
+- **Stops**: 8 Paris transport stops (metro, bus, tram)
+- **Routes**: 11 lines (Metro 1,4,6,7,9,14 + Bus 21,27,38 + Tram T1,T2)
+- **Schedules**: Generated trips every 15 minutes from 6 AM to midnight
+- **Coverage Area**: Central Paris (République, Châtelet, Bastille, etc.)
+
 ## TypeScript Configuration
 
 ### Path Aliases
