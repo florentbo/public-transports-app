@@ -19,9 +19,11 @@ npm run android     # Android emulator/device
 npm run ios        # iOS simulator/device
 npm run web        # Web browser
 
-# Code quality
-npm run lint       # Run ESLint
-npm run typecheck  # TypeScript type checking (tsc --noEmit)
+# Code quality & validation
+npm run lint          # Run ESLint (with React Native rules)
+npm run typecheck     # TypeScript type checking (tsc --noEmit)
+npm run validate      # Full validation (lint + typecheck + tests)
+npm run validate:quick # Quick validation (lint + typecheck only)
 ```
 
 ### Testing
@@ -177,9 +179,32 @@ The app currently uses mock data for Paris public transport:
 - **zod**: ^4.1.5 - Schema validation
 - **expo-router**: ~5.1.5 - File-based routing
 
+## Validation Tools
+
+### Pre-commit Hooks
+
+- **Husky** + **lint-staged** automatically validate code before commits
+- Runs ESLint, Prettier, and type checking on staged files
+- Prevents committing code with React Native compatibility issues
+
+### ESLint Configuration
+
+- **eslint-plugin-react-native** catches React Native specific issues
+- Detects unsupported StyleSheet properties (like `gap`)
+- Validates ThemedText component usage
+- Prevents runtime crashes from invalid CSS properties
+
+### Quick Validation
+
+```bash
+npm run validate:quick  # Before starting development
+npm run validate        # Before pushing code
+```
+
 ## Development Notes
 
 - React 19 is used (may cause peer dependency warnings - use `--legacy-peer-deps`)
 - Jest tests run in Node environment
 - Expo Go app can be used for mobile testing
 - Mock data is generated in memory (no persistence)
+- Pre-commit hooks ensure code quality and React Native compatibility
