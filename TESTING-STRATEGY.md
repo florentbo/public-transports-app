@@ -2,10 +2,12 @@
 
 ## Executive Summary
 
-For our first user story ("Display My Routes"), we will write **2 tests total**:
+For our first user story ("Display Personal Routes"), we will write **2 tests total**:
 
-1. **One domain test** - Journey entity validation
-2. **One integration test** - API to screen flow
+1. **One domain test** - PersonalRoute entity validation (with metadata)
+2. **One integration test** - API to screen flow with personal context
+
+_Note: Updated from "Journey" to "PersonalRoute" to align with vision while using Journey API internally._
 
 This pragmatic approach balances quality assurance with development velocity for a senior backend developer learning React Native.
 
@@ -72,43 +74,43 @@ After discussion and research, settled on 2-3 essential tests:
 
 ## Testing Strategy for First User Story
 
-### User Story: "Display My Routes"
+### User Story: "Display Personal Routes"
 
 **As a** user  
-**I want to** see my saved routes  
-**So that** I can quickly access my routine journeys
+**I want to** see my personal routes with nicknames  
+**So that** I can quickly identify my routine journeys
 
 ### Test Coverage (2 Tests)
 
-#### 1. Domain Test: Journey Entity
+#### 1. Domain Test: PersonalRoute Entity
 
 ```typescript
-// src/domain/entities/__tests__/Journey.test.ts
-describe("Journey Entity", () => {
-  it("should create valid journey with required fields", () => {
+// src/domain/entities/__tests__/PersonalRoute.test.ts
+describe("PersonalRoute Entity", () => {
+  it("should create valid personal route with metadata", () => {
     // Tests core business logic
-    // Validates entity constraints
-    // Documents domain rules
+    // Validates entity constraints with nickname, frequency, favorite
+    // Documents domain rules for personal context
   });
 });
 ```
 
-**Justification**: Core business logic, documents domain rules, catches critical errors
+**Justification**: Core business logic with personal context, documents domain rules, catches critical errors
 
 #### 2. Integration Test: API to Screen
 
 ```typescript
-// src/presentation/screens/__tests__/MyRoutes.integration.test.tsx
-describe("My Routes Screen Integration", () => {
-  it("should fetch and display user journeys", async () => {
-    // Tests complete flow
-    // Validates data transformation
-    // Ensures UI renders correctly
+// src/presentation/screens/__tests__/PersonalRoutes.integration.test.tsx
+describe("Personal Routes Screen Integration", () => {
+  it("should fetch and display personal routes with metadata", async () => {
+    // Tests complete flow with personal context
+    // Validates data transformation from Journey to PersonalRoute
+    // Ensures UI renders nicknames, favorites, frequency badges
   });
 });
 ```
 
-**Justification**: Tests critical path, validates entire feature works end-to-end
+**Justification**: Tests critical path, validates entire feature with personal context works end-to-end
 
 ### What We're NOT Testing (And Why)
 

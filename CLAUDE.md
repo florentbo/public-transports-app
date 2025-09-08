@@ -248,6 +248,18 @@ The app currently uses mock data for Paris public transport:
 
 ## Validation Tools
 
+### Git Commit Guidelines
+
+- Use single-line commit messages (no multi-line descriptions)
+- Commit message format: `type(scope): description`
+- Types: feat, fix, docs, style, refactor, test, chore
+- Keep messages concise and descriptive
+- NO Co-Authored-By lines or additional metadata
+- Examples:
+  - `docs: Update project roadmap with API evolution strategy`
+  - `feat: Add personal route display with metadata`
+  - `fix: Correct TypeScript types for PersonalRoute entity`
+
 ### Pre-commit Hooks
 
 - **Husky** + **lint-staged** automatically validate code before commits

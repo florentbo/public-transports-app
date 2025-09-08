@@ -65,6 +65,35 @@ Beyond just showing next departures:
 - **Commuter Groups**: Connect with people taking similar routes for carpooling/coordination
 - **Local Intelligence**: "Sarah says Platform 2 has better phone signal"
 
+## API Evolution Strategy
+
+### Backward-Compatible Evolution
+
+We have full control over the backend API, allowing us to evolve it to match our vision while maintaining compatibility with the existing web app:
+
+#### Phase 1: Add Personal Context (MVP)
+
+- Add optional metadata to Journey model:
+  - `nickname?: string` (e.g., "Morning commute")
+  - `frequency?: 'daily' | 'weekly' | 'occasional'`
+  - `isFavorite?: boolean`
+  - `lastUsed?: Date`
+  - `usageCount?: number`
+- All fields optional (won't break existing clients)
+- React Native app uses PersonalRoute concept internally
+
+#### Phase 2: Usage Tracking
+
+- Journey history and statistics
+- Success rate tracking
+- Actual vs planned comparisons
+
+#### Phase 3: Intelligence Layer
+
+- Pattern recognition
+- Predictive features
+- Full vision implementation
+
 ## Implementation Analysis
 
 ### Current React Native App
@@ -76,12 +105,12 @@ Beyond just showing next departures:
 - Mock data approach allows rapid iteration
 - React Query integration for caching
 
-**Gap from Vision:**
+**Gap from Vision (Intentional MVP Limitations):**
 
-- Shows nearby stops (generic) vs personal routes (vision)
-- No route memory or learning
-- No personalization or routine recognition
-- Missing proactive notifications
+- Shows nearby stops (generic) vs personal routes (vision) - _Phase 1 addresses_
+- No route memory or learning - _Phase 2 addresses_
+- No personalization or routine recognition - _Phase 1/2 addresses_
+- Missing proactive notifications - _Phase 3 addresses_
 
 ### Current Web App
 
@@ -92,12 +121,12 @@ Beyond just showing next departures:
 - API-first approach with code generation
 - Good architectural documentation
 
-**Gap from Vision:**
+**Gap from Vision (Will be addressed in API evolution):**
 
-- Still generic journey planning
-- No personal route storage
-- No learning or pattern recognition
-- Missing the "routine optimization" core
+- Still generic journey planning - _Phase 1 adds personal context_
+- No personal route storage - _Phase 1 adds metadata_
+- No learning or pattern recognition - _Phase 2 adds tracking_
+- Missing the "routine optimization" core - _Phase 3 adds intelligence_
 
 ## Evolution Strategy
 

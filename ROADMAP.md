@@ -7,48 +7,68 @@
 - ✅ React Native app with "Nearby Stops" (to be replaced)
 - ✅ Testing strategy documented (2 tests per feature)
 
-## Phase 1: Replace "Nearby Stops" with "My Routes" 🎯
+## Phase 1: Personal Routes Foundation with API Evolution 🎯
 
-### Epic: Display Personal Routes
+### Step 1: Backend API Evolution (2-3 hours)
 
-**Goal**: Replace current nearby stops functionality with personal saved routes from backend
-
-#### User Story 1: Fetch and Display Routes
-
-**As a** user  
-**I want to** see my saved routes on the home screen  
-**So that** I can quickly access my routine journeys
+**Goal**: Enhance API with personal context while maintaining backward compatibility
 
 **Tasks:**
 
-1. **Setup API Integration** (2-3 hours)
-   - [ ] Install and configure Kubb for React Native
-   - [ ] Generate API client from `https://public-transports-back.fly.dev/v3/api-docs`
-   - [ ] Setup React Query in React Native app
+1. Add optional metadata fields to JourneyDTO:
+   - [ ] nickname (e.g., "Morning commute")
+   - [ ] frequency (daily/weekly/occasional)
+   - [ ] isFavorite flag
+   - [ ] lastUsed timestamp
+   - [ ] usageCount
+
+2. Add new endpoints (optional):
+   - [ ] GET /journeys/favorites (filter favorites)
+   - [ ] PATCH /journeys/{id}/metadata (update metadata only)
+
+3. Deploy and verify:
+   - [ ] Existing web app still works
+   - [ ] New fields available in API
+
+### Step 2: React Native Implementation (1 week)
+
+#### User Story 1: Display Personal Routes
+
+**As a** user  
+**I want to** see my personal routes with nicknames  
+**So that** I can quickly identify my routine journeys
+
+**Tasks:**
+
+1. **API Integration** (2-3 hours)
+   - [ ] Install and configure Kubb
+   - [ ] Generate types from updated API spec
+   - [ ] Setup React Query
 
 2. **Domain Layer** (1-2 hours)
-   - [ ] Create Journey entity (`src/domain/entities/Journey.ts`)
-   - [ ] Create JourneyRepository interface (`src/domain/repositories/JourneyRepository.ts`)
-   - [ ] Write Journey entity test ✅ (Testing Strategy: 1/2 tests)
+   - [ ] Create PersonalRoute entity (maps from Journey with metadata)
+   - [ ] Create PersonalRouteRepository interface
+   - [ ] Write PersonalRoute entity test ✅ (1/2 tests)
 
 3. **Infrastructure Layer** (1 hour)
-   - [ ] Implement ApiJourneyRepository (`src/infrastructure/repositories/ApiJourneyRepository.ts`)
-   - [ ] Create DTO mappers for API responses
+   - [ ] Implement ApiPersonalRouteRepository
+   - [ ] Map JourneyDTO → PersonalRoute
 
-4. **Application Layer** (30 mins)
-   - [ ] Create useMyRoutes hook (`src/presentation/hooks/useMyRoutes.ts`)
-   - [ ] Map domain entities to presentation models
-
-5. **Presentation Layer** (2-3 hours)
-   - [ ] Update home screen to use useMyRoutes instead of useNearbyStops
-   - [ ] Create RouteCard component for displaying routes
-   - [ ] Handle loading, error, and empty states
-   - [ ] Write integration test ✅ (Testing Strategy: 2/2 tests)
+4. **Presentation Layer** (2-3 hours)
+   - [ ] Replace home screen to show personal routes
+   - [ ] Create PersonalRouteCard component
+   - [ ] Display nickname (fallback to origin→destination)
+   - [ ] Show frequency badge and favorite star
+   - [ ] Write integration test ✅ (2/2 tests)
 
 **Acceptance Criteria:**
 
-- [ ] Home screen shows personal routes instead of nearby stops
-- [ ] Each route displays origin and destination
+- [ ] Backend API enhanced with metadata fields
+- [ ] Existing web app continues working
+- [ ] Home screen shows personal routes with nicknames
+- [ ] Routes display nickname or fallback to origin→destination
+- [ ] Favorite routes show star indicator
+- [ ] Frequency badges displayed (daily/weekly/occasional)
 - [ ] Loading state while fetching routes
 - [ ] Error handling for API failures
 - [ ] Empty state when no routes exist
@@ -219,9 +239,10 @@
 
 ## Next Immediate Actions
 
-1. **Today**: Setup Kubb configuration in React Native project
-2. **This Week**: Complete User Story 1 implementation
-3. **Next Week**: User Story 2 + testing + polish
+1. **Today**: Update backend API with optional metadata fields
+2. **Tomorrow**: Deploy backend and verify compatibility
+3. **This Week**: Setup Kubb and implement React Native app
+4. **Next Week**: Complete UI and testing
 
 ## Notes
 
