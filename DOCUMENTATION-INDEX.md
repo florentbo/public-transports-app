@@ -8,6 +8,7 @@
 - **[README.md](./README.md)** - Quick start guide
 - **[PROJECT-VISION.md](./PROJECT-VISION.md)** - Personal transport assistant vision
 - **[ROADMAP.md](./ROADMAP.md)** - Development roadmap and current tasks
+- **[IMPLEMENTATION-PLAN.md](./IMPLEMENTATION-PLAN.md)** - Step-by-step PersonalRoute implementation plan
 - **[TESTING-STRATEGY.md](./TESTING-STRATEGY.md)** - Pragmatic testing approach (2 tests per feature)
 
 ## React Web App (Reference Implementation)
