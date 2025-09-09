@@ -11,24 +11,24 @@
 
 ### Step 1: Backend API Evolution (2-3 hours)
 
-**Goal**: Enhance API with personal context while maintaining backward compatibility
+**Goal**: Implement PersonalRoute Java backend to match OpenAPI specification
 
-**Tasks:**
+**⚠️ Current Status**:
 
-1. Add optional metadata fields to JourneyDTO:
-   - [ ] nickname (e.g., "Morning commute")
-   - [ ] frequency (daily/weekly/occasional)
-   - [ ] isFavorite flag
-   - [ ] lastUsed timestamp
-   - [ ] usageCount
+- ✅ OpenAPI spec updated with PersonalRoute endpoints (commit f88c366)
+- ❌ Java implementation still needed (controllers, services, repositories)
+- ❌ Deployment pending
 
-2. Add new endpoints (optional):
-   - [ ] GET /journeys/favorites (filter favorites)
-   - [ ] PATCH /journeys/{id}/metadata (update metadata only)
+**Backend Location**: `/home/florent/personal-dev/public-transports/public-transports-back/`
 
-3. Deploy and verify:
-   - [ ] Existing web app still works
-   - [ ] New fields available in API
+**Required Implementation**:
+
+1. Create PersonalRoute controllers matching OpenAPI spec
+2. Implement PersonalRoute services and repositories
+3. Deploy to fly.dev
+4. Verify endpoints work at https://public-transports-back.fly.dev/routes/personal
+
+**Note**: React Native work (Step 2) blocked until backend is deployed
 
 ### Step 2: React Native Implementation (1 week)
 

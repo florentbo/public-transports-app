@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a React Native public transport application built with Expo, TypeScript, and Clean Architecture principles. The app helps users find nearby public transport stops, routes, and schedules.
 
+## Related Projects
+
+- **Backend API**: `/home/florent/personal-dev/public-transports/public-transports-back/`
+- **API Documentation**: https://public-transports-back.fly.dev/v3/api-docs
+- **API Status**: PersonalRoute endpoints defined in OpenAPI spec, Java implementation pending
+
 ## Development Commands
 
 ### Core Development
