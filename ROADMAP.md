@@ -30,6 +30,8 @@
 
 **Note**: React Native work (Step 2) blocked until backend is deployed
 
+**Reference**: See working React web app at `/front/ui-first-try/` for Kubb + React Query patterns
+
 ### Step 2: React Native Implementation (1 week)
 
 #### User Story 1: Display Personal Routes
@@ -41,9 +43,9 @@
 **Tasks:**
 
 1. **API Integration** (2-3 hours)
-   - [ ] Install and configure Kubb
+   - [ ] Install and configure Kubb (see web app: `/front/ui-first-try/kubb.config.ts`)
    - [ ] Generate types from updated API spec
-   - [ ] Setup React Query
+   - [ ] Setup React Query (reference web app implementation)
 
 2. **Domain Layer** (1-2 hours)
    - [ ] Create PersonalRoute entity (maps from Journey with metadata)

@@ -9,6 +9,7 @@ This is a React Native public transport application built with Expo, TypeScript,
 ## Related Projects
 
 - **Backend API**: `/home/florent/personal-dev/public-transports/public-transports-back/`
+- **React Web App**: `/home/florent/personal-dev/public-transports/front/ui-first-try/` (reference implementation)
 - **API Documentation**: https://public-transports-back.fly.dev/v3/api-docs
 - **API Status**: PersonalRoute endpoints defined in OpenAPI spec, Java implementation pending
 
