@@ -1,38 +1,236 @@
 # Development Roadmap - Public Transports App
 
-## Current Status
+## 🚨 Current Status & Critical Blocker
 
-- ✅ Backend API serving personal journeys at `https://public-transports-back.fly.dev`
-- ✅ Web app with "My Routes" functionality using Kubb + React Query
-- ✅ React Native app with "Nearby Stops" (to be replaced)
-- ✅ Testing strategy documented (2 tests per feature)
+**Bottom Line**: React Native development is **BLOCKED** until PersonalRoute backend is implemented.
 
-## Phase 1: Personal Routes Foundation with API Evolution 🎯
+### 📁 3-App Structure
 
-### Step 1: Backend API Evolution (2-3 hours)
+```
+/home/florent/personal-dev/public-transports/
+├── PublicTransports/              # React Native app (Clean Architecture)
+├── public-transport-front/        # React web app (WORKING - don't touch)
+└── public-transports-back/        # Spring Boot backend (Journey works, PersonalRoute missing)
+```
 
-**Goal**: Implement PersonalRoute Java backend to match OpenAPI specification
+### ✅ What's Working
 
-**⚠️ Current Status**:
+**Backend API**
 
-- ✅ OpenAPI spec updated with PersonalRoute endpoints (commit f88c366)
-- ❌ Java implementation still needed (controllers, services, repositories)
-- ❌ Deployment pending
+- **Location**: `public-transports-back/`
+- **Live URL**: https://public-transports-back.fly.dev
+- **Status**: ✅ Journey API fully implemented and deployed
+- **Used By**: React web app successfully
 
-**Backend Location**: `/home/florent/personal-dev/public-transports/public-transports-back/`
+**React Web App**
 
-**Required Implementation**:
+- **Location**: `public-transport-front/`
+- **Status**: ✅ Working production app
+- **Features**: Journey list, detail views, Kubb + React Query integration
+- **API**: Uses Journey endpoints successfully
 
-1. Create PersonalRoute controllers matching OpenAPI spec
-2. Implement PersonalRoute services and repositories
-3. Deploy to fly.dev
-4. Verify endpoints work at https://public-transports-back.fly.dev/routes/personal
+**React Native App**
 
-**Note**: React Native work (Step 2) blocked until backend is deployed
+- **Location**: `PublicTransports/` (current directory)
+- **Status**: 🚧 Clean Architecture foundation complete, mock data working
+- **Features**: Nearby stops, route display, proper testing setup
 
-**Reference**: See working React web app at `/front/ui-first-try/` for Kubb + React Query patterns
+### ❌ Critical Blocker: PersonalRoute Backend Missing
 
-### Step 2: React Native Implementation (1 week)
+**Problem**:
+
+- OpenAPI spec defines PersonalRoute endpoints completely (`specs.yaml`)
+- Java implementation does NOT exist (only Journey controllers/services exist)
+- React Native cannot integrate without working backend
+
+**Location of Missing Code**: `public-transports-back/`
+
+**What Needs Implementation**:
+
+1. PersonalRoute entity (JPA)
+2. PersonalRouteRepository (Spring Data)
+3. PersonalRouteService (business logic)
+4. PersonalRouteController (REST endpoints)
+
+### 📊 API Status Matrix
+
+| API Endpoint      | OpenAPI Spec | Java Implementation | React Web App | React Native   |
+| ----------------- | ------------ | ------------------- | ------------- | -------------- |
+| Journey API       | ✅ Complete  | ✅ Working          | ✅ Using      | 🚫 Not using   |
+| PersonalRoute API | ✅ Complete  | ❌ **MISSING**      | 🚫 Not using  | 🚧 **BLOCKED** |
+
+---
+
+## 🎯 Immediate Next Steps - MUST DO FIRST
+
+### Step 1: Switch to Backend Directory
+
+```bash
+cd /home/florent/personal-dev/public-transports/public-transports-back/
+```
+
+### Step 2: Examine Existing Journey Implementation
+
+Look at these files to understand the pattern:
+
+- Journey entity
+- JourneyRepository
+- JourneyService
+- JourneyController
+
+### Step 3: Implement PersonalRoute Classes
+
+Create these 4 files following Journey patterns:
+
+1. **PersonalRoute Entity** (JPA)
+   - Match OpenAPI schema exactly
+   - All fields from `specs.yaml`
+
+2. **PersonalRouteRepository** (Spring Data JPA)
+   - Basic CRUD operations
+   - User-scoped queries
+
+3. **PersonalRouteService** (Business Logic)
+   - CRUD operations
+   - Validation logic
+
+4. **PersonalRouteController** (REST API)
+   - Match these exact endpoints:
+     - `GET /routes/personal`
+     - `POST /routes/personal`
+     - `GET /routes/personal/{routeId}`
+     - `PUT /routes/personal/{routeId}`
+     - `DELETE /routes/personal/{routeId}`
+
+### Step 4: Test Locally
+
+```bash
+mvn spring-boot:run
+curl http://localhost:8080/routes/personal
+```
+
+Should return `[]` (empty array), NOT 404.
+
+### Step 5: Deploy
+
+```bash
+mvn clean package
+fly deploy
+```
+
+### Step 6: Verify Live
+
+```bash
+curl https://public-transports-back.fly.dev/routes/personal
+```
+
+Should return `[]` (empty array), NOT 404.
+
+### ✅ Backend Success Criteria
+
+Backend implementation is complete when:
+
+- [ ] All PersonalRoute endpoints return 200 (not 404)
+- [ ] Can POST to create a PersonalRoute
+- [ ] Can GET list of PersonalRoutes (empty array is fine)
+- [ ] Journey API still works (backward compatibility)
+- [ ] OpenAPI docs reflect actual implementation
+
+---
+
+## 📋 Implementation Tasks
+
+### TASK 0: Backend PersonalRoute Implementation (MUST DO FIRST) 🚨
+
+**Location**: `/home/florent/personal-dev/public-transports/public-transports-back/`
+
+**What's Missing**: The Java backend has NO PersonalRoute implementation
+
+**What to Implement**: Based on the existing OpenAPI spec (`specs.yaml`):
+
+1. **PersonalRoute Entity** (JPA) - Match the OpenAPI schema exactly
+2. **PersonalRouteRepository** (Spring Data JPA) - Basic CRUD operations
+3. **PersonalRouteService** (Business Logic) - CRUD operations, filtering, validation
+4. **PersonalRouteController** (REST API) - Match OpenAPI endpoints exactly
+
+**Reference Implementation**: Look at existing Journey implementation for patterns
+
+### TASK 1: Deploy Backend (30 min)
+
+**Steps**:
+
+1. Build: `mvn clean package`
+2. Test locally: `mvn spring-boot:run`
+3. Verify endpoints: `curl http://localhost:8080/routes/personal`
+4. Deploy: `fly deploy`
+5. Verify live: `curl https://public-transports-back.fly.dev/routes/personal`
+
+**Success Criteria**:
+
+- [ ] PersonalRoute API live at https://public-transports-back.fly.dev/routes/personal
+- [ ] Journey API still works at /journeys
+- [ ] Both return expected JSON
+- [ ] API docs updated at /v3/api-docs
+
+### TASK 2: React Native Implementation (BLOCKED UNTIL BACKEND READY)
+
+**🚨 DO NOT START UNTIL TASK 0 & 1 ARE COMPLETE**
+
+**Prerequisites**:
+
+- [ ] Backend PersonalRoute API implemented and deployed
+- [ ] Endpoints return 200 (not 404)
+- [ ] Can create/read PersonalRoutes via API
+
+**Phase 1: API Integration** (2-3 hours)
+
+1. **Setup Kubb** (like web app)
+   - Configure kubb.config.ts
+   - Point to live PersonalRoute API
+   - Generate TypeScript types
+
+2. **Configure React Query**
+   - Setup QueryClient
+   - Create PersonalRoute hooks
+   - Handle caching and errors
+
+**Phase 2: Domain Layer** (1-2 hours)
+
+1. **Create PersonalRoute entity**
+   - Map from generated types
+   - Add business logic methods
+   - Write 1 domain test
+
+2. **Create repository interface**
+   - Define CRUD operations
+   - Match API capabilities
+
+**Phase 3: UI Implementation** (2-3 hours)
+
+1. **Replace home screen**
+   - Show PersonalRoutes instead of nearby stops
+   - Use generated React Query hooks
+   - Handle loading/error states
+
+2. **Create PersonalRoute components**
+   - PersonalRouteCard (display route info)
+   - PersonalRouteList (list view)
+   - Write 1 integration test
+
+**Success Criteria**:
+
+- [ ] React Native app displays PersonalRoutes from real API
+- [ ] Can tap on PersonalRoute (basic interaction)
+- [ ] Clean PersonalRoute naming throughout
+- [ ] 2 tests written (1 domain, 1 integration)
+
+---
+
+## 🚀 Development Phases (After Backend Complete)
+
+### Phase 1: Personal Routes Foundation 🎯
+
+**Timeline**: 1-2 weeks (after backend ready)
 
 #### User Story 1: Display Personal Routes
 
@@ -40,7 +238,7 @@
 **I want to** see my personal routes with nicknames  
 **So that** I can quickly identify my routine journeys
 
-**Tasks:**
+**Tasks**:
 
 1. **API Integration** (2-3 hours)
    - [ ] Install and configure Kubb (see web app: `/front/ui-first-try/kubb.config.ts`)
@@ -63,7 +261,7 @@
    - [ ] Show frequency badge and favorite star
    - [ ] Write integration test ✅ (2/2 tests)
 
-**Acceptance Criteria:**
+**Acceptance Criteria**:
 
 - [ ] Backend API enhanced with metadata fields
 - [ ] Existing web app continues working
@@ -75,7 +273,7 @@
 - [ ] Error handling for API failures
 - [ ] Empty state when no routes exist
 
-**Test Coverage:** 2 tests (1 domain, 1 integration)
+**Test Coverage**: 2 tests (1 domain, 1 integration)
 
 #### User Story 2: Route Details Navigation
 
@@ -83,7 +281,7 @@
 **I want to** tap on a route to see transport options  
 **So that** I can check arrival times for my journey
 
-**Tasks:**
+**Tasks**:
 
 1. **Navigation Setup** (1 hour)
    - [ ] Setup navigation to route details screen
@@ -95,11 +293,9 @@
    - [ ] Display arrival times and platforms
    - [ ] Handle real-time updates if available
 
-**Test Coverage:** 2 tests (1 navigation, 1 data fetching)
+**Test Coverage**: 2 tests (1 navigation, 1 data fetching)
 
-## Phase 2: Enhanced User Experience 🚀
-
-### Epic: Improved Route Management
+### Phase 2: Enhanced User Experience 🚀
 
 **Timeline**: After Phase 1 completion
 
@@ -121,9 +317,7 @@
 **I want to** reorder or mark favorite routes  
 **So that** my most used routes appear first
 
-## Phase 3: Advanced Features 📱
-
-### Epic: Smart Features
+### Phase 3: Advanced Features 📱
 
 **Timeline**: Future consideration
 
@@ -145,28 +339,53 @@
 **I want to** see my usage patterns  
 **So that** I can optimize my routes
 
-## Technical Milestones
+---
 
-### Milestone 1: API Integration Complete
+## 📊 Success Metrics & Timeline
 
-- [ ] Kubb generating TypeScript types
-- [ ] React Query managing data state
-- [ ] Error boundaries handling failures
-- [ ] Loading states throughout app
+### Backend Implementation Success:
 
-### Milestone 2: Feature Parity with Web App
+- [ ] PersonalRoute endpoints return 200 (not 404)
+- [ ] Can POST new personal route
+- [ ] Can GET personal routes list
+- [ ] OpenAPI spec matches actual API responses
+- [ ] Deployed to https://public-transports-back.fly.dev/routes/personal
 
-- [ ] All web app routes functionality available
-- [ ] Consistent data models between platforms
-- [ ] Shared API contracts working correctly
+### React Native Ready When:
 
-### Milestone 3: Native Mobile Experience
+- [ ] Backend implemented ✅
+- [ ] Kubb can generate types from live API
+- [ ] React Query hooks can fetch data
+- [ ] Can start implementing UI components
 
-- [ ] Touch-optimized UI components
-- [ ] Platform-appropriate navigation patterns
-- [ ] Performance optimized for mobile
+### Phase 1 Success Criteria:
 
-## Development Principles
+- [ ] App launches and displays personal routes
+- [ ] Navigation to route details works
+- [ ] No crashes or major bugs
+- [ ] Tests pass consistently
+- [ ] Performance acceptable on device
+
+### Learning Objectives (React Native):
+
+- [ ] Understanding React Native project structure
+- [ ] Working with React Query for state management
+- [ ] Navigation patterns in React Native
+- [ ] Platform differences (iOS vs Android)
+- [ ] Testing React Native components
+
+### ⏰ Time Estimates:
+
+- **Backend Implementation**: 2-3 hours
+- **Testing & Deployment**: 30 minutes
+- **React Native Integration**: 3-4 hours (after backend is ready)
+- **Phase 1**: 1-2 weeks (after backend complete)
+- **Phase 2**: 2-3 weeks
+- **Phase 3**: Future
+
+---
+
+## 🛡️ Development Principles
 
 ### Testing Strategy (Per TESTING-STRATEGY.md)
 
@@ -189,43 +408,9 @@
 - Functional components with hooks
 - Async/await over promises
 
-## Timeline Estimates
+---
 
-### Phase 1 (Priority 1): 1-2 weeks
-
-- **Week 1**: API setup + Domain/Infrastructure layers
-- **Week 2**: Presentation layer + testing + polish
-
-### Phase 2 (Priority 2): 2-3 weeks
-
-- Enhanced CRUD operations for routes
-- Improved UX and navigation
-
-### Phase 3 (Priority 3): Future
-
-- Advanced features based on usage feedback
-- Performance optimizations
-- Platform-specific enhancements
-
-## Success Metrics
-
-### Phase 1 Success Criteria
-
-- [ ] App launches and displays personal routes
-- [ ] Navigation to route details works
-- [ ] No crashes or major bugs
-- [ ] Tests pass consistently
-- [ ] Performance acceptable on device
-
-### Learning Objectives (React Native)
-
-- [ ] Understanding React Native project structure
-- [ ] Working with React Query for state management
-- [ ] Navigation patterns in React Native
-- [ ] Platform differences (iOS vs Android)
-- [ ] Testing React Native components
-
-## Risk Management
+## ⚠️ Risk Management
 
 ### Technical Risks
 
@@ -239,17 +424,52 @@
 - **Over-Engineering**: Remember this is a learning project
 - **Time Investment**: Focus on Phase 1, defer advanced features
 
-## Next Immediate Actions
+---
 
-1. **Today**: Update backend API with optional metadata fields
-2. **Tomorrow**: Deploy backend and verify compatibility
-3. **This Week**: Setup Kubb and implement React Native app
-4. **Next Week**: Complete UI and testing
+## 🚫 What NOT to Do
 
-## Notes
+- **Don't** start React Native work until backend is complete
+- **Don't** touch the React web app (it works, leave it alone)
+- **Don't** worry about complex features yet (keep it simple)
 
-- This roadmap follows our pragmatic testing approach (TESTING-STRATEGY.md)
-- Architecture aligns with Clean Architecture guidelines (CLAUDE.md)
-- Project vision documented in PROJECT-VISION.md
-- Focus on learning React Native while building useful functionality
-- Each phase can be evaluated independently for continuation
+---
+
+## 🔗 Reference Materials
+
+### Key Files to Reference
+
+- **OpenAPI Spec**: `adapter-rest/src/main/resources/specs.yaml`
+- **Journey Implementation**: Look for Journey\*.java files
+- **Database Config**: Check existing JPA setup
+
+### API Schema to Implement
+
+From `specs.yaml`, the PersonalRoute schema includes:
+
+- `id` (UUID)
+- `routeName` (String)
+- `origin` (PersonalLocation)
+- `destination` (PersonalLocation)
+- `routeType` (enum)
+- `metadata` (object with isFavorite, color, etc.)
+- `statistics` (read-only)
+- `createdAt/updatedAt` (timestamps)
+
+Start with basic fields first, add complex ones later.
+
+### Reference Links
+
+- **Backend Code**: `/home/florent/personal-dev/public-transports/public-transports-back/`
+- **Working Web App**: `/home/florent/personal-dev/public-transports/public-transport-front/`
+- **OpenAPI Spec**: `public-transports-back/adapter-rest/src/main/resources/specs.yaml`
+- **Live API Docs**: https://public-transports-back.fly.dev/v3/api-docs
+
+---
+
+## 💡 Key Insights
+
+**The documentation confusion was caused by planning React Native work when the backend didn't exist yet.**
+
+Now that this is clear, backend implementation becomes the obvious first step. Once that's done, React Native integration will be straightforward.
+
+**Focus backend first - everything else depends on it.**
